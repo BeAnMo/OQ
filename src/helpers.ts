@@ -9,8 +9,8 @@ export function setAccum<Json>(type: Function): Compound<Json> {
 }
 
 /**
- * adds a new key:value pair to a collection,
- * if an Array, appends to the end
+ * @desription Adds a new key:value pair to a collection.
+ * If the collection is an Array, appends item to the end.
  */
 export function append<T>(
   collection: Compound<T>,
@@ -39,9 +39,8 @@ export function isUndefined(val: any): val is undefined {
 /*---- General purpose ------------------------------------------------------*/
 
 /**
- * Any, ...(Any) -> Any -> Any
- * composes functions with src as initial input
- * pipe(4, add2, sub5, mul10) == mul10(sub5(add2(4)))
+ * @description Composes functions with src as initial input.
+ * ex: pipe(4, add2, sub5, mul10) == mul10(sub5(add2(4)))
  */
 export function pipe(src: any, ...fns: Function[]): any {
   return fns.reduce((acc, fn) => fn(acc), src);

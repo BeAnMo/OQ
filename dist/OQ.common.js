@@ -78,8 +78,8 @@ function setAccum(type) {
   return type === Array ? [] : Object.create(null);
 }
 /**
- * adds a new key:value pair to a collection,
- * if an Array, appends to the end
+ * @desription Adds a new key:value pair to a collection.
+ * If the collection is an Array, appends item to the end.
  */
 
 function append(collection, item, key) {
@@ -100,14 +100,14 @@ function isCompound(item) {
  * No plans for Array.reduceRight,
  * because I assume Object keys do not
  * maintain order (even if they actually do).
- *
- * @param {Any} accum
  */
 
 function fold(accum, collection, fn) {
   // converts array indexes to [...String]
   // eliminates need to check type
   // ...though if accum is an Array, could
+  // be optimized with Array.push
+  // Alternatively, if an Object has not prototype
   var keys = Object.keys(collection);
   var acc = accum;
 
@@ -118,22 +118,8 @@ function fold(accum, collection, fn) {
 
   return acc;
 }
-/*export function fold(accum, collection, fn) {
-  // converts array indexes to [...String]
-  // eliminates need to check type
-  // ...though if accum is an Array, could
-  // be optimized with Array.push
-  const keys = Object.keys(collection);
-  let acc = accum;
-
-  for (const key of keys) {
-    acc = fn(acc, collection[key], key);
-  }
-
-  return acc;
-}*/
-
-/** @description Maps a procedure to a collection.
+/**
+ * @description Maps a procedure to a collection.
  * Similar to Array.map.
  */
 
@@ -143,6 +129,13 @@ function map(collection, proc) {
     return append(acc, proc(val, key), key);
   });
 }
+/**
+ * @description Flattens a nested document to
+ * a Dictionary of composite keys. That is
+ * each key in the Dict represents the path
+ * to its own value.
+ */
+
 function flatten(collection) {
   var withAcc = function withAcc(coll, accum, p) {
     return fold(accum, coll, function (acc, value, key) {
@@ -154,10 +147,11 @@ function flatten(collection) {
 
   return withAcc(collection, {}, '');
 }
-/** @description findAll differs from filter in that
+/**
+ * @description findAll differs from filter in that
  * filter returns the original shape of the collection
- * that has been filtered accordingly, findAll returns a
- * flat collection of K:V pairs
+ * that has been filtered accordingly, findAll returns an
+ * Array of { key, value, path }
  *
  * flatFilter == flatFindAll
  */
@@ -185,8 +179,10 @@ function deepFindAll(delim, collection, isMatch) {
 
   return withAcc(collection, [], '');
 }
-/** @description Returns the K:V pair for
- * every key in keys. Search stop for first
+/**
+ * @description Returns a Dictionary of
+ * K:V pairs for every key in keys.
+ * A search stops for first
  * instance of a key found.
  * Uses depth-first search.
  */
@@ -214,8 +210,8 @@ function deepFindKeys(collection) {
 
   return withAcc(collection, Object.create(null));
 }
-/** @description Counts all occurrences
- * of the given key.
+/**
+ * @description Counts all occurrences of the given key.
  */
 
 function count(aDoc, aKey) {
@@ -234,6 +230,11 @@ function count(aDoc, aKey) {
 
   return withCount(aDoc, 0);
 }
+
+/**
+ * @description Retrieves the document(s)
+ * at the given path.
+ */
 function traverse(_ref) {
   var blank = _ref.blank,
       all = _ref.all,

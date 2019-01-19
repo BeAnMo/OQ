@@ -70,7 +70,8 @@ class OQ<T> {
    * currently depth-first only
    */
 
-  /** @description counts all occurences
+  /**
+   * @description counts all occurences
    * of given key within a document
    * @param {String}
    */
@@ -82,7 +83,8 @@ class OQ<T> {
     return null;
   };
 
-  /** @description flattens the collection
+  /**
+   * @description flattens the collection
    * to a composite-key Dictionary
    * if path is given, returns whole
    * doc with flattened sub-doc @ path
@@ -96,7 +98,8 @@ class OQ<T> {
     }
   };
 
-  /** @description returns a flat collection of K:V pairs
+  /**
+   * @description returns a flat collection of K:V pairs
    * where the predicate holds true
    * @param {Function} predicate ```Value, Key -> Boolean```
    */
@@ -107,7 +110,8 @@ class OQ<T> {
     );
   };
 
-  /** @description returns an Object
+  /**
+   * @description returns an Object
    * of K:V pairs at the given keys
    */
   public valuesOf = (...keys: string[]) => {

@@ -12,8 +12,6 @@ import { setType, setAccum, append, isCompound, maybeValue } from './helpers';
  * No plans for Array.reduceRight,
  * because I assume Object keys do not
  * maintain order (even if they actually do).
- *
- * @param {Any} accum
  */
 export function fold<Json>(
   accum: Json,
@@ -24,6 +22,8 @@ export function fold<Json>(
   // eliminates need to check type
   // ...though if accum is an Array, could
   // be optimized with Array.push
+  // Alternatively, if an Object has not prototype
+  // could use for..in for both Object/Array
   const keys: Key[] = Object.keys(collection);
   let acc = accum;
 
@@ -34,22 +34,8 @@ export function fold<Json>(
   return acc;
 }
 
-/*export function fold(accum, collection, fn) {
-  // converts array indexes to [...String]
-  // eliminates need to check type
-  // ...though if accum is an Array, could
-  // be optimized with Array.push
-  const keys = Object.keys(collection);
-  let acc = accum;
-
-  for (const key of keys) {
-    acc = fn(acc, collection[key], key);
-  }
-
-  return acc;
-}*/
-
-/** @description Maps a procedure to a collection.
+/**
+ * @description Maps a procedure to a collection.
  * Similar to Array.map.
  */
 export function map<T>(collection: Compound<T>, proc: Function): Compound<T> {
@@ -63,6 +49,12 @@ export function map<T>(collection: Compound<T>, proc: Function): Compound<T> {
   );
 }
 
+/**
+ * @description Flattens a nested document to
+ * a Dictionary of composite keys. That is
+ * each key in the Dict represents the path
+ * to its own value.
+ */
 export function flatten<Json>(collection: Compound<Json>): Dict<Json> {
   const withAcc = (coll: Compound<Json>, accum: Dict<Json>, p: string) => {
     return fold(accum, coll, (acc: Dict<Json>, value: Json, key: Key) => {
@@ -78,10 +70,11 @@ export function flatten<Json>(collection: Compound<Json>): Dict<Json> {
   return withAcc(collection, {}, '');
 }
 
-/** @description findAll differs from filter in that
+/**
+ * @description findAll differs from filter in that
  * filter returns the original shape of the collection
- * that has been filtered accordingly, findAll returns a
- * flat collection of K:V pairs
+ * that has been filtered accordingly, findAll returns an
+ * Array of { key, value, path }
  *
  * flatFilter == flatFindAll
  */
@@ -109,8 +102,10 @@ export function deepFindAll<Json>(
   return withAcc(collection, [], '');
 }
 
-/** @description Returns the K:V pair for
- * every key in keys. Search stop for first
+/**
+ * @description Returns a Dictionary of
+ * K:V pairs for every key in keys.
+ * A search stops for first
  * instance of a key found.
  * Uses depth-first search.
  */
@@ -138,8 +133,8 @@ export function deepFindKeys<Json>(
   return withAcc(collection, Object.create(null));
 }
 
-/** @description Counts all occurrences
- * of the given key.
+/**
+ * @description Counts all occurrences of the given key.
  */
 export function count<Json>(aDoc: JsonDoc<Json>, aKey: string): number {
   const withCount = (doc: JsonDoc<Json>, num: number) => {
@@ -166,6 +161,10 @@ interface TraverseArgs<T> {
   atKey?: Function;
 }
 
+/**
+ * @description Retrieves the document(s)
+ * at the given path.
+ */
 export function traverse<Json>({
   blank,
   all,
