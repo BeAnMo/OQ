@@ -145,7 +145,7 @@ Doc.deepFindAll((value, key) => ...).get(); //
 
 ##### OQ.valuesOf: ...String -> OQ-Doc
 
-Retrieves the first value of each given key and returns an OQ-Doc of an Object with each given key's value.
+Retrieves the first value of each given key and returns an OQ-Doc of an Object with each given key's value. Comparable to Json-Find's <code>findKeys</code> method.
 
 ```js
 Doc.valuesOf('a', 'c', 'h').get(); // { a: 1, c: 2, h: 'hello' }
