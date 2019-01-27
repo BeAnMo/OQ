@@ -76,8 +76,7 @@ Doc.get();
 Retrieves the sub-document at the given path. A path is a string with each key separated by the custom delimiter. For retrieval of all keys (including Array indexes) use "\*".
 
 ```js
-Doc.at('b.1.d.2'); // 9
-Doc.at('b.1.d.2').get(); // Error, 9 is not compound data
+Doc.at('b.1.d.2').get(); // 9
 Doc.at('b.1'); // new OQ object of { c: 3, d: [7, 8, 9] }
 Doc.at('b.1').get(); // { c: 3, d: [7, 8, 9] }
 
@@ -104,4 +103,50 @@ Comparable to <code>Array.reduce</code>. Applies a given procedure to each key:v
 
 ```js
 Doc.flatReduce((accum, value, key) => ..., ...);
+```
+
+### Deep Methods
+
+All deep methods currently use depth-first search and traverse an entire document.
+
+##### OQ.count: String -> Number
+
+Counts All occurences of a given key.
+
+```js
+Doc.count('c'); // 2
+```
+
+##### OQ.flatten: String? -> OQ-Doc
+
+Flattens the entire current Document or the sub-Document at the given path. The result is an Object whose keys represent the path to their respective _primitive_ values (compound data will not be values).
+
+```js
+Doc.flatten().get();
+/*
+{
+    a: 1,
+    'b.0.c': 2,
+    'b.0.d.0': 4,
+    'b.0.d.1': 5,
+    'b.0.d.2': 6,
+    ...
+}
+*/
+```
+
+##### OQ.deepFindAll: ((Any, String|Number) -> Boolean) -> OQ-Doc
+
+Retrives all sub-documents that match the given predicate. The resulting OQ-Doc is an Array of Objects of <code>{ value: Any, key: String, path: String }</code>.
+
+```js
+Doc.deepFindAll((value, key) => ...).get(); //
+```
+
+##### OQ.valuesOf: ...String -> OQ-Doc
+
+Retrieves the first value of each given key and returns an OQ-Doc of an Object with each given key's value.
+
+```js
+Doc.valuesOf('a', 'c', 'h').get(); // { a: 1, c: 2, h: 'hello' }
 ```
