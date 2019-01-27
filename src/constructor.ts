@@ -12,13 +12,13 @@ import {
 const BLANK = '';
 const ALL = '*';
 
-class OQ<T> {
-  private _doc: JsonDoc<T>;
+class OQ<Doc> {
+  private _doc: JsonDoc<Doc>;
   private _config: Config;
 
-  constructor(doc: JsonDoc<T>, config: Config) {
+  constructor(doc: JsonDoc<Doc>, config: Config | undefined) {
     this._doc = doc;
-    this._config = config;
+    this._config = config || { delimiter: '.' };
   }
 
   /**
@@ -45,7 +45,7 @@ class OQ<T> {
             blank: BLANK,
             all: ALL
             //atKey: x => x
-          }) as JsonDoc<T>,
+          }) as JsonDoc<Doc>,
           this._config
         );
   };
@@ -56,12 +56,12 @@ class OQ<T> {
    * similar to Array methods
    */
 
-  public flatReduce = (proc: Function, acc: any): OQ<T> => {
+  public flatReduce = (proc: Function, acc: any): OQ<Doc> => {
     return new OQ(fold(acc, this._doc, proc), this._config);
   };
 
-  public flatMap = (proc: Function): OQ<T> => {
-    return new OQ(map(this._doc, proc) as JsonDoc<T>, this._config);
+  public flatMap = (proc: Function): OQ<Doc> => {
+    return new OQ(map(this._doc, proc) as JsonDoc<Doc>, this._config);
   };
 
   /**
@@ -89,12 +89,12 @@ class OQ<T> {
    * if path is given, returns whole
    * doc with flattened sub-doc @ path
    */
-  public flatten = (path: string | undefined): OQ<T> => {
+  public flatten = (path: string | undefined): OQ<Doc> => {
     if (!path) {
-      return new OQ(flatten(this._doc) as JsonDoc<T>, this._config);
+      return new OQ(flatten(this._doc) as JsonDoc<Doc>, this._config);
     } else {
       // return new doc with contents flattened @ given path
-      return new OQ(flatten(this.at(path).get()) as JsonDoc<T>, this._config);
+      return new OQ(flatten(this.at(path).get()) as JsonDoc<Doc>, this._config);
     }
   };
 
@@ -103,9 +103,9 @@ class OQ<T> {
    * where the predicate holds true
    * @param {Function} predicate ```Value, Key -> Boolean```
    */
-  public deepFindAll = (predicate: Function): OQ<T> => {
+  public deepFindAll = (predicate: Function): OQ<Doc> => {
     return new OQ(
-      deepFindAll(this._config.delimiter, this._doc, predicate) as JsonDoc<T>,
+      deepFindAll(this._config.delimiter, this._doc, predicate) as JsonDoc<Doc>,
       this._config
     );
   };
